@@ -1,0 +1,33 @@
+package:
+  name: q2-diversity-lib
+  version: 2018.11.01
+
+# source:
+# #   path: ../..
+#
+# # build:
+# #   script: make install
+#
+# requirements:
+#   build:
+#     - python 3.5*
+#     - setuptools
+#     - nodejs
+#
+#   run:
+#     - python 3.5*
+#     - setuptools
+#     - pandas
+#     - qiime2 2018.11.*
+#     - q2templates 2018.11.*
+#     - q2-types 2018.11.*
+#
+# # test:
+# #   imports:
+# #     - q2_taxa
+# #     - qiime2.plugins.taxa
+#
+# about:
+#   home: https://qiime2.org
+#   license: BSD-3-Clause
+#   license_family: BSD

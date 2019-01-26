@@ -1,29 +1,26 @@
 # ----------------------------------------------------------------------------
-# Copyright (c) 2016-2018, QIIME 2 development team.
+# Copyright (c) 2018-2019, QIIME 2 development team.
 #
 # Distributed under the terms of the Modified BSD License.
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-from qiime2.plugin import (Plugin)
+import q2_diversity_lib
+from qiime2.plugin import (Plugin, Citations, Properties)
 # Q2_DIVERSITY:
 # from qiime2.plugin import (Plugin, Str, Properties, Choices, Int, Bool, Range
 #                          Float, Set, Visualization, Metadata, MetadataColumn,
 #                           Categorical, Numeric, Citations)
-import q2_diversity_lib
 
-
-from qiime2.plugin import Citations
+from q2_types.feature_table import (FeatureTable, Frequency)
+from q2_types.tree import Phylogeny, Rooted
+from q2_types.sample_data import AlphaDiversity, SampleData
 # Q2_DIVERSITY:
 # from q2_types.feature_data import (FeatureData, Sequence, AlignedSequence,
 #                                    Taxonomy)
-# from q2_types.feature_table import (FeatureTable, Frequency)
-# from q2_types.tree import Phylogeny, Rooted
 # from q2_types.feature_table import FeatureTable, Frequency, RelativeFrequency
 # from q2_types.distance_matrix import DistanceMatrix
-# from q2_types.sample_data import AlphaDiversity, SampleData
-# from q2_types.tree import Phylogeny, Rooted
 # from q2_types.ordination import PCoAResults
 
 citations = Citations.load('citations.bib', package='q2_diversity_lib')
@@ -34,20 +31,42 @@ plugin = Plugin(
     short_description=('Utility exposing diversity metrics as actions'),
     package='q2_diversity_lib',
     description=('Utility plugin exposing alpha- and beta-diversity metrics',
-                 'as discrete Actions'),  # TODO expand? missing space?
-    # user_support_text=('https://github.com/biocore/'
-    #                    'q2-fragment-insertion/issues'),
+                 'as discrete Actions'),
+    user_support_text=('https://docs.qiime2.org'),
 )
 
+# plugin.methods.register_function(
+#     function=q2_diversity_lib.hello_world,
+#     inputs=None,
+#     parameters=None,
+#     outputs=None,
+#     input_descriptions=None,
+#     parameter_descriptions=None,
+#     output_descriptions=None,
+#     name='Hello World',
+#     description='HelloWorld: a Greeting',
+#     citations=[citations['HelloWorld']]
+# )
+
 plugin.methods.register_function(
-    function=q2_diversity_lib.hello_world,
-    inputs=None,
+    function=q2_diversity_lib.faith_pd,
+    inputs={'table': FeatureTable[Frequency], 'phylogeny': Phylogeny[Rooted]},
     parameters=None,
-    outputs=None,
-    input_descriptions=None,
+    outputs=[('faith_pd',
+              SampleData[AlphaDiversity] % Properties('phylogenetic'))],
+    input_descriptions={
+        'table': ('The feature table containing the samples for which Faith\'s'
+                  ' phylogenetic diversity should be computed.'),
+        'phylogeny': ('Phylogenetic tree containing tip identifiers that '
+                      'correspond to the feature identifiers in the table. '
+                      'This tree can contain tip ids that are not present in '
+                      'the table, but all feature ids in the table must be '
+                      'present in this tree.')},
     parameter_descriptions=None,
-    output_descriptions=None,
-    name='Hello World',
-    description='HelloWorld: a Broad Greeting',
-    citations=[citations['HelloWorld']]
+    output_descriptions={'faith_pd': ('Vector containing per-sample values for'
+                                      ' Faith\'s Phylogenetic Diversity.')},
+    name='Faith\s Phylogenetic Diversity',
+    description=('Computes Faith\'s Phylogenetic Diversity for all samples in '
+                 'a feature table.'),
+    citations=[citations['faith1992conservation']]
 )

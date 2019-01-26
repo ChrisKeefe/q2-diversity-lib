@@ -6,8 +6,11 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 
-# from ._method import (hello_world)
+# from ._alpha import (hello_world)
 # __all__ = ['hello_world']
 
-from ._method import (faith_pd)
+from ._alpha import (faith_pd)
 __all__ = ['faith_pd']
+
+# __version__ = get_versions()['version']
+__version__ = "0.01"
