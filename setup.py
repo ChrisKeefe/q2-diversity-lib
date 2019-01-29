@@ -7,12 +7,12 @@
 # ----------------------------------------------------------------------------
 
 from setuptools import setup, find_packages
-
-# TODO: confirm this works
+import versioneer
 
 setup(
     name='q2-diversity-lib',
-    version="0.01",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(),
     author="QIIME 2 development team",
     author_email="crk239@nau.edu",
