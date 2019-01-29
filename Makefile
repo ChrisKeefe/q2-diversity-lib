@@ -20,6 +20,6 @@ dev: all
 uninstall-dev:
 	pip uninstall q2-diversity-lib
 
-# clean: distclean
-#
-# distclean: ;
+clean: distclean
+
+distclean: ;

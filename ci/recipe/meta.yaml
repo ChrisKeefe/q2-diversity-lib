@@ -1,33 +1,35 @@
+{% set data = load_setup_py_data() %}
+{% set version = data.get('version') or 'placehold' %}
+{% set release = '.'.join(version.split('.')[:2]) %}
+
 package:
   name: q2-diversity-lib
-  version: 2018.11.01
+  version: {{ version }}
 
-# source:
-# #   path: ../..
-#
-# # build:
-# #   script: make install
-#
-# requirements:
-#   build:
-#     - python 3.5*
-#     - setuptools
-#     - nodejs
-#
-#   run:
-#     - python 3.5*
-#     - setuptools
-#     - pandas
-#     - qiime2 2018.11.*
-#     - q2templates 2018.11.*
-#     - q2-types 2018.11.*
-#
-# # test:
-# #   imports:
-# #     - q2_taxa
-# #     - qiime2.plugins.taxa
-#
-# about:
-#   home: https://qiime2.org
-#   license: BSD-3-Clause
-#   license_family: BSD
+source:
+  path: ../..
+
+build:
+  script: make install
+
+requirements:
+  host:
+    - python {{ python }}
+    - setuptools
+
+  run:
+    - pandas
+    - scikit-bio
+    - biom-format >=2.1.5,<2.2.0
+    - qiime2 {{ release }}.*
+    - q2-types {{ release }}.*
+
+test:
+  imports:
+    - q2_diversity_lib
+    - qiime2.plugins.diversity_lib
+
+about:
+  home: https://qiime2.org
+  license: BSD-3-Clause
+  license_family: BSD
