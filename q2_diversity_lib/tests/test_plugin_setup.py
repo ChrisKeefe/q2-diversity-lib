@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 from unittest import TestCase, main
-from q2_metadata.plugin_setup import plugin
+from q2_diversity_lib.plugin_setup import plugin
 
 
 class PluginTests(TestCase):
