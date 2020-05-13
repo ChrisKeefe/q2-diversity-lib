@@ -69,6 +69,31 @@ def weighted_unifrac(table: BIOMV210Format,
                      n_jobs: int = 1,
                      bypass_tips: bool = False) -> skbio.DistanceMatrix:
     f = unifrac.weighted_unnormalized
-
     return f(str(table), str(phylogeny), threads=n_jobs,
              variance_adjusted=False, bypass_tips=bypass_tips)
+
+
+@_disallow_empty_tables
+@_safely_constrain_n_jobs
+def weighted_normalized_unifrac(
+        table: BIOMV210Format, phylogeny: NewickFormat,
+        n_jobs: int = 1, variance_adjusted: bool = False,
+        bypass_tips: bool = False) -> skbio.DistanceMatrix:
+    f = unifrac.weighted_normalized
+    return f(str(table), str(phylogeny), threads=n_jobs,
+             variance_adjusted=variance_adjusted, bypass_tips=bypass_tips)
+
+
+@_disallow_empty_tables
+@_safely_constrain_n_jobs
+def generalized_unifrac(table: BIOMV210Format, phylogeny: NewickFormat,
+                        n_jobs: int = 1, alpha: float = 1.0,
+                        variance_adjusted: bool = False,
+                        bypass_tips: bool = False) -> skbio.DistanceMatrix:
+    f = unifrac.generalized
+    # TODO: Is the unifrac.generalized warning handled appropriately?
+    # It should reach the user. If it doesn't, maybe catch it and provide
+    # output a la https://stackoverflow.com/a/15934081. Probably overdoing it.
+    # Maybe better to just check the value of alpha, report our own warning?
+    return f(str(table), str(phylogeny), threads=n_jobs, alpha=alpha,
+             variance_adjusted=variance_adjusted, bypass_tips=bypass_tips)
