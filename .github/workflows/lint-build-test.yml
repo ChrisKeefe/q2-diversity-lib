@@ -31,11 +31,6 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    # for versioneer
-    - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
     - uses: qiime2/action-library-packaging@alpha1
       with: 
         plugin-name: q2-diversity-lib
