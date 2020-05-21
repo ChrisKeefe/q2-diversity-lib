@@ -18,7 +18,9 @@ requirements:
     - setuptools
 
   run:
+    - biom-format
     - pandas
+    - psutil
     - scikit-bio
     - unifrac
     - biom-format >=2.1.5,<2.2.0
