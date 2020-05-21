@@ -20,6 +20,7 @@ requirements:
   run:
     - pandas
     - scikit-bio
+    - unifrac
     - biom-format >=2.1.5,<2.2.0
     - qiime2 {{ release }}.*
     - q2-types {{ release }}.*
