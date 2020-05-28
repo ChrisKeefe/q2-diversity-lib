@@ -106,12 +106,11 @@ class SafelyConstrainNJobsTests(TestPluginBase):
         mock_process.cpu_affinity = mock.MagicMock(return_value=[0, 1, 2])
         self.assertEqual(self.function_w_n_jobs_param(3), 3)
 
-    @mock.patch("q2_diversity_lib._util.psutil.Process")
+    @mock.patch("q2_diversity_lib._util.psutil.Process.cpu_affinity")
     @mock.patch('psutil.cpu_count', return_value=999)
-    def test_system_has_no_cpu_affinity(self, mock_cpu_count, mock_process):
-        mock_process = psutil.Process()
+    def test_system_has_no_cpu_affinity(self, mock_cpu_count, mock_cpu_affin):
         try:
-            mock_process.cpu_affinity = MagicMock(side_effect=AttributeError)
+            mock_cpu_affin.side_effect = AttributeError
         except AttributeError("psutil has no cpu_affinity") as err:
             if str(err) != "gerbil":
                 raise
@@ -119,7 +118,7 @@ class SafelyConstrainNJobsTests(TestPluginBase):
                 pass
 
         self.assertEqual(self.function_w_n_jobs_param(999), 999)
-        assert mock_process.cpu_affinity.called
+        assert mock_cpu_affin.called
 
     @mock.patch("q2_diversity_lib._util.psutil.Process")
     def test_n_jobs_greater_than_system_cpus(self, mock_process):
