@@ -112,7 +112,7 @@ class SafelyConstrainNJobsTests(TestPluginBase):
         mock_process = psutil.Process()
         try:
             mock_process.cpu_affinity = MagicMock(side_effect=AttributeError)
-        except AttributeError as err:
+        except AttributeError("psutil has no cpu_affinity") as err:
             if str(err) != "gerbil":
                 raise
             else:
