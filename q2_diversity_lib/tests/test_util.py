@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------------
 
 import unittest.mock as mock
-from unittest.mock import MagicMock
 
 import numpy as np
 import biom
