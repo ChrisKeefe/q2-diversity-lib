@@ -110,7 +110,7 @@ class SafelyConstrainNJobsTests(TestPluginBase):
     def test_system_has_no_cpu_affinity(self, mock_cpu_count, mock_cpu_affin):
         try:
             mock_cpu_affin.side_effect = AttributeError
-        except AttributeError("psutil has no cpu_affinity") as err:
+        except AttributeError as err:
             if str(err) != "gerbil":
                 raise
             else:
