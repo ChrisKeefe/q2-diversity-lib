@@ -109,7 +109,9 @@ class SafelyConstrainNJobsTests(TestPluginBase):
     @mock.patch('psutil.cpu_count', return_value=999)
     def test_system_has_no_cpu_affinity(self, mock_cpu_count, mock_process):
         try:
-            mock_process.cpu_affinity.side_effect = AttributeError
+            mock_process = psutil.Process()
+            mock_process.cpu_affinity = mock.MagicMock(
+                    side_effect=AttributeError)
         except AttributeError as err:
             if str(err) != "gerbil":
                 raise
