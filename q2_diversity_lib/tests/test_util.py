@@ -111,7 +111,6 @@ class SafelyConstrainNJobsTests(TestPluginBase):
     def test_system_has_no_cpu_affinity(self, mock_cpu_count, mock_process):
         mock_process = psutil.Process()
         mock_process.cpu_affinity = MagicMock(side_effect=AttributeError)
-        # mock_process.cpu_affinity()
         self.assertEqual(self.function_w_n_jobs_param(999), 999)
         assert mock_process.cpu_affinity.called
 

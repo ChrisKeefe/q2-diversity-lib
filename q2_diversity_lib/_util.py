@@ -67,12 +67,8 @@ def _safely_constrain_n_jobs(some_function, *args, **kwargs):
     # If `Process.cpu_affinity` unavailable on system, fall back
     # https://psutil.readthedocs.io/en/latest/index.html#psutil.cpu_count
     try:
-        # print("in try")
-        # print(psutil.Process().cpu_affinity())
         cpus = len(psutil.Process().cpu_affinity())
-        # print("cpus = ", cpus)
     except AttributeError:
-        # print("in except")
         cpus = psutil.cpu_count(logical=False)
     if n_jobs > cpus:
         raise ValueError('The value of n_jobs cannot exceed the'
