@@ -63,6 +63,18 @@ def unweighted_unifrac(table: BIOMV210Format,
 
 @_disallow_empty_tables
 @_safely_constrain_n_jobs
+def variance_adjusted_unweighted_unifrac(table: BIOMV210Format,
+                                         phylogeny: NewickFormat,
+                                         n_jobs: int = 1,
+                                         bypass_tips: bool = False
+                                         ) -> skbio.DistanceMatrix:
+    f = unifrac.unweighted
+    return f(str(table), str(phylogeny), threads=n_jobs,
+             variance_adjusted=True, bypass_tips=bypass_tips)
+
+
+@_disallow_empty_tables
+@_safely_constrain_n_jobs
 def weighted_unifrac(table: BIOMV210Format,
                      phylogeny: NewickFormat,
                      n_jobs: int = 1,
@@ -70,6 +82,18 @@ def weighted_unifrac(table: BIOMV210Format,
     f = unifrac.weighted_unnormalized
     return f(str(table), str(phylogeny), threads=n_jobs,
              variance_adjusted=False, bypass_tips=bypass_tips)
+
+
+@_disallow_empty_tables
+@_safely_constrain_n_jobs
+def variance_adjusted_weighted_unifrac(table: BIOMV210Format,
+                                       phylogeny: NewickFormat,
+                                       n_jobs: int = 1,
+                                       bypass_tips: bool = False
+                                       ) -> skbio.DistanceMatrix:
+    f = unifrac.weighted_unnormalized
+    return f(str(table), str(phylogeny), threads=n_jobs,
+             variance_adjusted=True, bypass_tips=bypass_tips)
 
 
 @_disallow_empty_tables

@@ -215,7 +215,7 @@ class JaccardTests(TestPluginBase):
 
 
 # ---------------------------------Phylogenetic-------------------------------
-class UnweightedUnifrac(TestPluginBase):
+class UnweightedUnifracTests(TestPluginBase):
     package = 'q2_diversity_lib.tests'
 
     def setUp(self):
@@ -271,7 +271,7 @@ class UnweightedUnifrac(TestPluginBase):
         self.assertTrue(True)
 
 
-class WeightedUnifrac(TestPluginBase):
+class WeightedUnifracTests(TestPluginBase):
     package = 'q2_diversity_lib.tests'
 
     def setUp(self):
@@ -320,9 +320,12 @@ class WeightedUnifrac(TestPluginBase):
                                             self.expected[id1, id2])
 
 
-class WeightedNormalizedUnifrac(TestPluginBase):
+class WeightedNormalizedUnifracTests(TestPluginBase):
     # TODO: is weighted normalized unifrac an alias for diversity's
-    # variance_adjusted_normalized?
+    # variance_adjusted_normalized? Is it, instead, an alias for Weighted
+    # Unifrac run on a RF table?
+
+    # TODO: inspect test data
     package = 'q2_diversity_lib.tests'
 
     def setUp(self):

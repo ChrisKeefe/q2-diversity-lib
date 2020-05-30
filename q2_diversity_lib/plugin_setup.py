@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 import q2_diversity_lib
-from qiime2.plugin import (Plugin, Citations, Bool, Int)
+from qiime2.plugin import (Plugin, Citations, Bool, Int, Float, Range)
 
 from q2_types.feature_table import (FeatureTable, Frequency, RelativeFrequency,
                                     PresenceAbsence)
@@ -207,6 +207,45 @@ plugin.methods.register_function(
         citations['mcdonald2018unifrac']]
 )
 
+
+plugin.methods.register_function(
+    function=q2_diversity_lib.variance_adjusted_unweighted_unifrac,
+    inputs={'table': FeatureTable[Frequency | RelativeFrequency],
+            'phylogeny': Phylogeny[Rooted]},
+    parameters={'n_jobs': Int,
+                'bypass_tips': Bool},
+    outputs=[('distance_matrix', DistanceMatrix)],
+    input_descriptions={
+        'table': "The feature table containing the samples for which "
+                 "Variance Adjusted Unweighted Unifrac should be computed.",
+        'phylogeny': "Phylogenetic tree containing tip identifiers that "
+                     "correspond to the feature identifiers in the table. "
+                     "This tree can contain tip ids that are not present in "
+                     "the table, but all feature ids in the table must be "
+                     "present in this tree."},
+    parameter_descriptions={
+        'n_jobs': "The number of CPU threads to use in performing this "
+                  "calculation.  More threads = faster performance. May not "
+                  "exceed the number of available physical cores.",
+        'bypass_tips':
+            ("In a bifurcating tree, the tips make up about 50% of "
+             "the nodes in a tree. By ignoring them, specificity "
+             "can be traded for reduced compute time. This has the"
+             " effect of collapsing the phylogeny, and is analogous"
+             " (in concept) to moving from 99% to 97% OTUs")},
+    output_descriptions={'distance_matrix': "Distance matrix for Variance "
+                         "Adjusted Unweighted Unifrac."},
+    name="Variance Adjusted Unweighted Unifrac",
+    description="Compute Variance Adjusted Unweighted Unifrac for each sample "
+                "in a feature table. Note: while Variance Adjusted Unweighted "
+                "UniFrac was not described in Chang et al, factoring in the "
+                "variance adjustment is feasible and so it is exposed.",
+    citations=[
+        citations['chang2011variance'],
+        citations['mcdonald2018unifrac']]
+)
+
+
 plugin.methods.register_function(
     function=q2_diversity_lib.weighted_unifrac,
     inputs={'table': FeatureTable[Frequency | RelativeFrequency],
@@ -242,5 +281,131 @@ plugin.methods.register_function(
         citations['lozupone2007unifrac'],
         citations['hamady2010unifrac'],
         citations['lozupone2011unifrac'],
+        citations['mcdonald2018unifrac']]
+)
+
+
+plugin.methods.register_function(
+    function=q2_diversity_lib.variance_adjusted_weighted_unifrac,
+    inputs={'table': FeatureTable[Frequency | RelativeFrequency],
+            'phylogeny': Phylogeny[Rooted]},
+    parameters={'n_jobs': Int,
+                'bypass_tips': Bool},
+    outputs=[('distance_matrix', DistanceMatrix)],
+    input_descriptions={
+        'table': "The feature table containing the samples for which "
+                 "Variance Adjusted Weighted Unifrac should be computed.",
+        'phylogeny': "Phylogenetic tree containing tip identifiers that "
+                     "correspond to the feature identifiers in the table. "
+                     "This tree can contain tip ids that are not present in "
+                     "the table, but all feature ids in the table must be "
+                     "present in this tree."},
+    parameter_descriptions={
+        'n_jobs': "The number of CPU threads to use in performing this "
+                  "calculation.  More threads = faster performance. May not "
+                  "exceed the number of available physical cores.",
+        'bypass_tips': ("In a bifurcating tree, the tips make up about 50% of "
+                        "the nodes in a tree. By ignoring them, specificity "
+                        "can be traded for reduced compute time. This has the"
+                        " effect of collapsing the phylogeny, and is analogous"
+                        " (in concept) to moving from 99% to 97% OTUs")},
+    output_descriptions={'distance_matrix': "Distance matrix for Variance "
+                         "Adjusted Weighted Unifrac."},
+    name="Variance Adjusted Weighted Unifrac",
+    description="Compute Variance Adjusted Weighted Unifrac for each sample "
+                "in a feature table",
+    citations=[
+        citations['chang2011variance'],
+        citations['mcdonald2018unifrac']]
+)
+
+
+plugin.methods.register_function(
+    function=q2_diversity_lib.weighted_normalized_unifrac,
+    inputs={'table': FeatureTable[Frequency | RelativeFrequency],
+            'phylogeny': Phylogeny[Rooted]},
+    parameters={'n_jobs': Int,
+                'variance_adjusted': Bool,
+                'bypass_tips': Bool},
+    outputs=[('distance_matrix', DistanceMatrix)],
+    input_descriptions={
+        'table': "The feature table containing the samples for which "
+                 "Weighted Normalized Unifrac should be computed.",
+        'phylogeny': "Phylogenetic tree containing tip identifiers that "
+                     "correspond to the feature identifiers in the table. "
+                     "This tree can contain tip ids that are not present in "
+                     "the table, but all feature ids in the table must be "
+                     "present in this tree."},
+    parameter_descriptions={
+        'n_jobs': "The number of CPU threads to use in performing this "
+                  "calculation.  More threads = faster performance. May not "
+                  "exceed the number of available physical cores.",
+        'variance_adjusted': ("Perform variance adjustment based on Chang et "
+                              "al. BMC Bioinformatics 2011. Weights distances "
+                              "based on the proportion of the relative "
+                              "abundance represented between the samples at a "
+                              "given node under evaluation."),
+        'bypass_tips': ("In a bifurcating tree, the tips make up about 50% of "
+                        "the nodes in a tree. By ignoring them, specificity "
+                        "can be traded for reduced compute time. This has the"
+                        " effect of collapsing the phylogeny, and is analogous"
+                        " (in concept) to moving from 99% to 97% OTUs")},
+    output_descriptions={'distance_matrix': "Distance matrix for Weighted "
+                         "Normalized Unifrac."},
+    name="Weighted Normalized Unifrac",
+    description="Compute Weighted Unifrac for each sample in a feature table, "
+                "normalized by the average distance from features in each "
+                "sample to the root of the phylogeny",
+    citations=[
+        citations['lozupone2005unifrac'],
+        citations['lozupone2007unifrac'],
+        citations['hamady2010unifrac'],
+        citations['lozupone2011unifrac'],
+        citations['mcdonald2018unifrac']]
+)
+
+# TODO: Type-constrain generalized unifrac appropriately
+plugin.methods.register_function(
+    function=q2_diversity_lib.generalized_unifrac,
+    inputs={'table': FeatureTable[Frequency | RelativeFrequency],
+            'phylogeny': Phylogeny[Rooted]},
+    parameters={'n_jobs': Int,
+                'alpha': Float % Range(0, 1, inclusive_end=True),
+                'variance_adjusted': Bool,
+                'bypass_tips': Bool},
+    outputs=[('distance_matrix', DistanceMatrix)],
+    input_descriptions={
+        'table': "The feature table containing the samples for which "
+                 "Generalized Unifrac should be computed.",
+        'phylogeny': "Phylogenetic tree containing tip identifiers that "
+                     "correspond to the feature identifiers in the table. "
+                     "This tree can contain tip ids that are not present in "
+                     "the table, but all feature ids in the table must be "
+                     "present in this tree."},
+    parameter_descriptions={
+        'n_jobs': "The number of CPU threads to use in performing this "
+                  "calculation.  More threads = faster performance. May not "
+                  "exceed the number of available physical cores.",
+        'alpha': ("The value of alpha controls importance of sample "
+                  "proportions. 1.0 is weighted normalized UniFrac. "
+                  "0.0 is close to unweighted UniFrac, but only if the sample "
+                  "proportions are dichotomized."),
+        'variance_adjusted': ("Perform variance adjustment based on Chang et "
+                              "al. BMC Bioinformatics 2011. Weights distances "
+                              "based on the proportion of the relative "
+                              "abundance represented between the samples at a "
+                              "given node under evaluation."),
+        'bypass_tips': ("In a bifurcating tree, the tips make up about 50% of "
+                        "the nodes in a tree. By ignoring them, specificity "
+                        "can be traded for reduced compute time. This has the"
+                        " effect of collapsing the phylogeny, and is analogous"
+                        " (in concept) to moving from 99% to 97% OTUs")},
+    output_descriptions={'distance_matrix': "Distance matrix for Generalized "
+                         "Unifrac."},
+    name="Generalized Unifrac",
+    description="Compute Generalized Unifrac for each sample in a feature "
+                "table.",
+    citations=[
+        citations['chen2012genUnifrac'],
         citations['mcdonald2018unifrac']]
 )
