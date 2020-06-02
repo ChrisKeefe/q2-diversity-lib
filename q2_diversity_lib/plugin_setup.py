@@ -116,7 +116,7 @@ plugin.methods.register_function(
 # TODO: Augment citations as needed
 plugin.methods.register_function(
     function=q2_diversity_lib.bray_curtis,
-    inputs={'table': FeatureTable[Frequency]},
+    inputs={'table': FeatureTable[Frequency | RelativeFrequency]},
     parameters={'n_jobs': Int},
     outputs=[('distance_matrix', DistanceMatrix)],
     input_descriptions={
@@ -364,7 +364,6 @@ plugin.methods.register_function(
         citations['mcdonald2018unifrac']]
 )
 
-# TODO: Type-constrain generalized unifrac appropriately
 plugin.methods.register_function(
     function=q2_diversity_lib.generalized_unifrac,
     inputs={'table': FeatureTable[Frequency | RelativeFrequency],

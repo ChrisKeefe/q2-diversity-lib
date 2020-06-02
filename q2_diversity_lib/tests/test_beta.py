@@ -321,10 +321,6 @@ class WeightedUnifracTests(TestPluginBase):
 
 
 class WeightedNormalizedUnifracTests(TestPluginBase):
-    # TODO: is weighted normalized unifrac an alias for diversity's
-    # variance_adjusted_normalized? Is it, instead, an alias for Weighted
-    # Unifrac run on a RF table?
-
     # TODO: inspect test data
     package = 'q2_diversity_lib.tests'
 
