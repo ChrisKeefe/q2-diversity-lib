@@ -22,6 +22,7 @@ from q2_diversity_lib import (
 from qiime2 import Artifact
 
 nonphylogenetic_measures = [bray_curtis, jaccard]
+# TODO: add VAW, VAU, and generalized
 phylogenetic_measures = [unweighted_unifrac, weighted_unifrac,
                          weighted_normalized_unifrac]
 
@@ -321,7 +322,8 @@ class WeightedUnifracTests(TestPluginBase):
 
 
 class WeightedNormalizedUnifracTests(TestPluginBase):
-    # TODO: inspect test data
+    # TODO: This suite doesn't test variance_adjusted=False (also untested in
+    # q2-diversity). Should that be constrained away or is this an oversight?
     package = 'q2_diversity_lib.tests'
 
     def setUp(self):
@@ -343,11 +345,16 @@ class WeightedNormalizedUnifracTests(TestPluginBase):
                  'Sample6'))
 
         self.table_fp = self.get_data_path('vaw.biom')
-        # TODO: add relative frequency table
+        self.table_as_BIOMV210Format = BIOMV210Format(self.table_fp, mode='r')
+        self.rel_freq_table_fp = self.get_data_path('vaw_rf.biom')
+        self.rf_table_as_BIOMV210Format = \
+            BIOMV210Format(self.rel_freq_table_fp, mode='r')
         self.tree_fp = self.get_data_path('vaw.nwk')
 
     def test_method(self):
-        actual = weighted_normalized_unifrac(self.table_fp, self.tree_fp)
+        actual = weighted_normalized_unifrac(self.table_as_BIOMV210Format,
+                                             self.tree_fp,
+                                             variance_adjusted=True)
         self.assertEqual(actual.ids, self.expected.ids)
         for id1 in actual.ids:
             for id2 in actual.ids:
@@ -355,14 +362,16 @@ class WeightedNormalizedUnifracTests(TestPluginBase):
                                         self.expected[id1, id2])
 
     def test_accepted_types_have_consistent_behavior(self):
-        freq_table = self.table_fp
-        # TODO: revert
-        # rel_freq_table = self.rel_freq_table_fp
-        # accepted_tables = [freq_table, rel_freq_table]
-        accepted_tables = [freq_table]
+        # TODO: Weighted normalized unifrac unable to take rel_freq data?
+        # or is rf_vaw.biom bad?
+        accepted_tables = [self.table_as_BIOMV210Format]
+                        #    self.rf_table_as_BIOMV210Format]
+                        # TODO: reinstate above?
         for table in accepted_tables:
+            print(table)
             actual = weighted_normalized_unifrac(table=table,
-                                                 phylogeny=self.tree_fp)
+                                                 phylogeny=self.tree_fp,
+                                                 variance_adjusted=True)
             self.assertEqual(actual.ids, self.expected.ids)
             for id1 in actual.ids:
                 for id2 in actual.ids:

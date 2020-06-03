@@ -16,9 +16,10 @@ from biom import load_table
 
 from q2_types.feature_table import BIOMV210Format
 
-skbio_methods = ["bray_curtis", "jaccard"]
-unifrac_methods = ["unweighted_unifrac", "weighted_unifrac",
-                   "faith_pd"]
+skbio_methods = ['bray_curtis', 'jaccard']
+# TODO: add VAW, VAU, generalized
+unifrac_methods = ['unweighted_unifrac', 'weighted_unifrac',
+                   'faith_pd', 'weighted_normalized_unifrac']
 
 
 def _drop_undefined_samples(counts: np.ndarray, sample_ids: np.ndarray,
