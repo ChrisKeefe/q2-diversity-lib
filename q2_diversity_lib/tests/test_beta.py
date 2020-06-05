@@ -17,13 +17,15 @@ from qiime2.plugin.testing import TestPluginBase
 from q2_types.feature_table import BIOMV210Format
 from q2_diversity_lib import (
         bray_curtis, jaccard, unweighted_unifrac, weighted_unifrac,
-        weighted_normalized_unifrac)
+        weighted_normalized_unifrac, variance_adjusted_weighted_unifrac)
 
 from qiime2 import Artifact
 
 nonphylogenetic_measures = [bray_curtis, jaccard]
+# TODO: add VAU, and generalized
 phylogenetic_measures = [unweighted_unifrac, weighted_unifrac,
-                         weighted_normalized_unifrac]
+                         weighted_normalized_unifrac,
+                         variance_adjusted_weighted_unifrac]
 
 
 class SmokeTests(TestPluginBase):
@@ -321,11 +323,14 @@ class WeightedUnifracTests(TestPluginBase):
 
 
 class WeightedNormalizedUnifracTests(TestPluginBase):
-    # TODO: inspect test data
+    # TODO: This suite doesn't test variance_adjusted=False (also untested in
+    # q2-diversity). Should that be constrained away or is this an oversight?
     package = 'q2_diversity_lib.tests'
 
     def setUp(self):
         super().setUp()
+        # TODO: This data from q2-diversity test_variance_adjusted_normalized
+        # which tests weighted_normalized_unifrac with VA=True
         self.expected = skbio.DistanceMatrix(
             np.array([[0.0000000, 0.4086040, 0.6240185, 0.4639481, 0.2857143,
                        0.2766318],
@@ -343,11 +348,16 @@ class WeightedNormalizedUnifracTests(TestPluginBase):
                  'Sample6'))
 
         self.table_fp = self.get_data_path('vaw.biom')
-        # TODO: add relative frequency table
+        self.table_as_BIOMV210Format = BIOMV210Format(self.table_fp, mode='r')
+        self.rel_freq_table_fp = self.get_data_path('vaw_rf.biom')
+        self.rf_table_as_BIOMV210Format = \
+            BIOMV210Format(self.rel_freq_table_fp, mode='r')
         self.tree_fp = self.get_data_path('vaw.nwk')
 
     def test_method(self):
-        actual = weighted_normalized_unifrac(self.table_fp, self.tree_fp)
+        actual = weighted_normalized_unifrac(self.table_as_BIOMV210Format,
+                                             self.tree_fp,
+                                             variance_adjusted=True)
         self.assertEqual(actual.ids, self.expected.ids)
         for id1 in actual.ids:
             for id2 in actual.ids:
@@ -355,19 +365,68 @@ class WeightedNormalizedUnifracTests(TestPluginBase):
                                         self.expected[id1, id2])
 
     def test_accepted_types_have_consistent_behavior(self):
-        freq_table = self.table_fp
-        # TODO: revert
-        # rel_freq_table = self.rel_freq_table_fp
-        # accepted_tables = [freq_table, rel_freq_table]
-        accepted_tables = [freq_table]
+        # TODO: Is weighted normalized unifrac able to take rel_freq data?
+        accepted_tables = [self.table_as_BIOMV210Format]
         for table in accepted_tables:
             actual = weighted_normalized_unifrac(table=table,
-                                                 phylogeny=self.tree_fp)
+                                                 phylogeny=self.tree_fp,
+                                                 variance_adjusted=True)
             self.assertEqual(actual.ids, self.expected.ids)
             for id1 in actual.ids:
                 for id2 in actual.ids:
                     npt.assert_almost_equal(actual[id1, id2],
                                             self.expected[id1, id2])
+
+
+# class VarianceAdjustedWeightedUnifracTests(TestPluginBase):
+#     package = 'q2_diversity_lib.tests'
+# 
+#     def setUp(self):
+#         super().setUp()
+#         self.expected = skbio.DistanceMatrix(
+#             np.array([[0.0000000, 0.4086040, 0.6240185, 0.4639481, 0.2857143,
+#                        0.2766318],
+#                       [0.4086040, 0.0000000, 0.3798594, 0.6884992, 0.6807616,
+#                        0.4735781],
+#                       [0.6240185, 0.3798594, 0.0000000, 0.7713254, 0.8812897,
+#                        0.5047114],
+#                       [0.4639481, 0.6884992, 0.7713254, 0.0000000, 0.6666667,
+#                        0.2709298],
+#                       [0.2857143, 0.6807616, 0.8812897, 0.6666667, 0.0000000,
+#                        0.4735991],
+#                       [0.2766318, 0.4735781, 0.5047114, 0.2709298, 0.4735991,
+#                        0.0000000]]),
+#             ids=('Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5',
+#                  'Sample6'))
+# 
+#         self.table_fp = self.get_data_path('vaw.biom')
+#         self.table_as_BIOMV210Format = BIOMV210Format(self.table_fp, mode='r')
+#         self.rel_freq_table_fp = self.get_data_path('vaw_rf.biom')
+#         self.rf_table_as_BIOMV210Format = \
+#             BIOMV210Format(self.rel_freq_table_fp, mode='r')
+#         self.tree_fp = self.get_data_path('vaw.nwk')
+# 
+#     def test_method(self):
+#         actual = variance_adjusted_weighted_unifrac(
+#             self.table_as_BIOMV210Format, self.tree_fp)
+#         self.assertEqual(actual.ids, self.expected.ids)
+#         for id1 in actual.ids:
+#             for id2 in actual.ids:
+#                 npt.assert_almost_equal(actual[id1, id2],
+#                                         self.expected[id1, id2])
+# 
+#     def test_accepted_types_have_consistent_behavior(self):
+#         # TODO: Is VAW unifrac able to take rel_freq data?
+#         accepted_tables = [self.table_as_BIOMV210Format,
+#                            self.rf_table_as_BIOMV210Format]
+#         for table in accepted_tables:
+#             actual = variance_adjusted_weighted_unifrac(table=table,
+#                                                         phylogeny=self.tree_fp)
+#             self.assertEqual(actual.ids, self.expected.ids)
+#             for id1 in actual.ids:
+#                 for id2 in actual.ids:
+#                     npt.assert_almost_equal(actual[id1, id2],
+#                                             self.expected[id1, id2])
 
 # TODO: add tests - drop undefined values?
 # TODO: Add test classes - fancy unifracs
